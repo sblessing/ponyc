@@ -1,38 +1,23 @@
-FROM ubuntu:16.04
+FROM ponylang/ponyc-ci-docker-image-base:20191006
 
-ENV LLVM_VERSION 7.0.1
-
-RUN apt-get update \
- && apt-get install -y \
-  apt-transport-https \
-  g++ \
-  git \
-  libncurses5-dev \
-  make \
-  wget \
-  xz-utils \
-  zlib1g-dev \
-  curl \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "D401AB61 DBE1D0A2" \
- && echo "deb https://dl.bintray.com/pony-language/pony-stable-debian /" | tee -a /etc/apt/sources.list \
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "47E4F8DEE04F0923" \
+ && add-apt-repository "deb https://dl.bintray.com/pony-language/ponylang-debian  $(lsb_release -cs) main" \
  && apt-get update \
- && apt-get install -y \
-  pony-stable \
- && rm -rf /var/lib/apt/lists/* \
- && wget -O - http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-16.04.tar.xz \
- | tar xJf - --strip-components 1 -C /usr/local/ clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-16.04
+ && apt-get install -y pony-stable
 
 WORKDIR /src/ponyc
-COPY Makefile LICENSE VERSION /src/ponyc/
+COPY .git /src/ponyc/.git
+COPY .gitmodules /src/ponyc/
+COPY Makefile Makefile-ponyc Makefile-lib-llvm LICENSE VERSION /src/ponyc/
 COPY benchmark /src/ponyc/benchmark
 COPY src      /src/ponyc/src
 COPY lib      /src/ponyc/lib
 COPY test     /src/ponyc/test
 COPY packages /src/ponyc/packages
 
-RUN make arch=x86-64 tune=intel \
- && make install \
- && rm -rf /src/ponyc/build
+RUN make arch=x86-64 tune=intel default_pic=true -f Makefile-lib-llvm use=llvm_link_static -j3 \
+ && make -f Makefile-lib-llvm install \
+ && rm -rf /src/ponyc
 
 WORKDIR /src/main
 

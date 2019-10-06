@@ -38,8 +38,17 @@ jobs:
       steps:
         - checkout
         - setup_remote_docker
-        - run: docker build --cache-from=app -t app .
-        - run: docker build --cache-from=app-alpine --file=.dockerhub/alpine/Dockerfile -t app-alpine .
+        - run: docker build --file=Dockerfile .
+        - zulip/status:
+            fail_only: true
+
+  validate-alpine-docker-image-builds:
+      docker:
+        - image: ponylang/shared-docker-ci-docker-builder:20190808
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run: docker build --file=.dockerhub/alpine/Dockerfile .
         - zulip/status:
             fail_only: true
 
@@ -392,6 +401,16 @@ workflows:
                 - release
 
       - validate-docker-image-builds:
+#          requires:
+#            - lib-llvm-ubuntu-release
+          context: org-global
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+
+      - validate-alpine-docker-image-builds:
           requires:
             - verify-changelog
             - validate-shell-scripts

@@ -1,3 +1,12 @@
+docker_builder:
+  name: "validate-docker-image-builds"
+  timeout_in: 120m
+
+  build_script:
+    - docker build --file=Dockerfile .
+
+  only_if: $CIRRUS_BRANCH != 'master' && $CIRRUS_BRANCH != 'release'
+
 task:
   freebsd_instance:
     image: freebsd-12-0-release-amd64
