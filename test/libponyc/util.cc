@@ -264,6 +264,9 @@ void PassTest::SetUp()
 
 void PassTest::TearDown()
 {
+  _builtin_src = NULL;
+  _first_pkg_path = NULL;
+
   if(compile != NULL)
   {
     codegen_cleanup(compile);
