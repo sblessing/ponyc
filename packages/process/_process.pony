@@ -52,6 +52,9 @@ class val Exited is (Stringable & Equatable[ProcessExitStatus])
     _exit_code = code
 
   fun exit_code(): I32 =>
+    """
+    Retrieve the exit code of the exited process.
+    """
     _exit_code
 
   fun string(): String iso^ =>
@@ -80,6 +83,9 @@ class val Signaled is (Stringable & Equatable[ProcessExitStatus])
     _signal = sig
 
   fun signal(): U32 =>
+    """
+    Retrieve the signal number that exited the process.
+    """
     _signal
 
   fun string(): String iso^ =>
@@ -247,6 +253,10 @@ class _ProcessPosix is _Process
     end
 
 primitive _WaitPidStatus
+  """
+  Pure Pony implementaton of C macros for investigating
+  the status returned by `waitpid()`.
+  """
 
   fun exited(wstatus: I32): Bool =>
     termsig(wstatus) == 0
