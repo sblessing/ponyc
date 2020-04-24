@@ -24,7 +24,7 @@ add_library(libponyc STATIC
     codegen/gencall.c
     codegen/gencontrol.c
     codegen/gendesc.c
-    codegen/genexe.c
+    codegen/genexe.cc
     codegen/genexpr.c
     codegen/genfun.c
     codegen/genheader.c
@@ -97,6 +97,38 @@ add_library(libponyc STATIC
     verify/fun.c
     verify/type.c
 )
+
+if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
+    target_link_libraries(ponyc PRIVATE
+        lldDriver
+        lldMachO
+        lldReaderWriter
+        lldCore
+        lldCommon
+        lldWasm
+        lldYAML
+    )
+  elseif(MSVC)
+    target_link_libraries(ponyc PRIVATE
+        lldDriver
+        lldCOFF
+        lldReaderWriter
+        lldCore
+        lldCommon
+        lldWasm
+        lldYAML
+    )
+  else()
+    target_link_libraries(libponyc PRIVATE
+      lldDriver
+      lldELF
+      lldReaderWriter
+      lldCore
+      lldCommon
+      lldWasm
+      lldYAML
+    )
+  endif()
 
 target_compile_definitions(libponyc PRIVATE
     PONY_ALWAYS_ASSERT

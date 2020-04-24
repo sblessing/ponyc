@@ -90,6 +90,10 @@ if(PONY_USE_MEMTRACK_MESSAGES)
     add_compile_options(-DUSE_MEMTRACK -DUSE_MEMTRACK_MESSAGES)
 endif()
 
+IF(PONY_USE_LLD)
+  add_compile_options("-DUSE_LLD")
+endif()
+
 # LibPonyC tests assume that our outputs are two directories above the root directory.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/../debug${PONY_OUTPUT_SUFFIX}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/../release${PONY_OUTPUT_SUFFIX}")

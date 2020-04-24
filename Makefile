@@ -5,6 +5,7 @@ build_flags ?= -j2
 llvm_archs ?= X86
 llvm_config ?= Release
 llc_arch ?= x86-64
+llvm_enable_projects ?= lld
 
 ifndef version
   version := $(shell cat VERSION)
@@ -124,6 +125,8 @@ define USE_CHECK
     PONY_USES += -DPONY_USE_MEMTRACK=true
   else ifeq ($1,memtrack_messages)
     PONY_USES += -DPONY_USE_MEMTRACK_MESSAGES=true
+  else ifeq ($1,lld)
+	  PONY_USES += -DPONY_USE_LLD=true
   else
     $$(error ERROR: Unknown use option specified: $1)
   endif
@@ -142,7 +145,7 @@ endif
 
 libs:
 	$(SILENT)mkdir -p '$(libsBuildDir)'
-	$(SILENT)cd '$(libsBuildDir)' && env CC="$(CC)" CXX="$(CXX)" cmake -B '$(libsBuildDir)' -S '$(libsSrcDir)' -DCMAKE_INSTALL_PREFIX="$(libsOutDir)" -DCMAKE_BUILD_TYPE="$(llvm_config)" -DLLVM_TARGETS_TO_BUILD="$(llvm_archs)" $(CMAKE_VERBOSE_FLAGS)
+	$(SILENT)cd '$(libsBuildDir)' && env CC="$(CC)" CXX="$(CXX)" cmake -B '$(libsBuildDir)' -S '$(libsSrcDir)' -DCMAKE_INSTALL_PREFIX="$(libsOutDir)" -DCMAKE_BUILD_TYPE="$(llvm_config)" -DLLVM_TARGETS_TO_BUILD="$(llvm_archs)" -DLLVM_ENABLE_PROJECTS=$(llvm_enable_projects) $(CMAKE_VERBOSE_FLAGS)
 	$(SILENT)cd '$(libsBuildDir)' && env CC="$(CC)" CXX="$(CXX)" cmake --build '$(libsBuildDir)' --target install --config $(llvm_config) -- $(build_flags)
 
 cleanlibs:

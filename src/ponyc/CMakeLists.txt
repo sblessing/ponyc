@@ -23,6 +23,13 @@ if (MSVC)
         PRIVATE ucrt
         PRIVATE Ws2_32
         PRIVATE Shlwapi
+        PRIVATE lldDriver
+        PRIVATE lldCOFF
+        PRIVATE lldReaderWriter
+        PRIVATE lldCore
+        PRIVATE lldCommon
+        PRIVATE lldWasm
+        PRIVATE lldYAML
     )
 
     set_source_files_properties(main.c PROPERTIES LANGUAGE CXX)
@@ -33,11 +40,33 @@ if (MSVC)
     LIST(REMOVE_ITEM TARGET_LIBRARIES LTO)
     set_property(TARGET ponyc PROPERTY LINK_LIBRARIES ${TARGET_LIBRARIES})
 else()
+  if(${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
     target_link_libraries(ponyc PRIVATE
         libponyc
         libponyrt
         blake2
+        lldDriver
+        lldMachO
+        lldReaderWriter
+        lldCore
+        lldCommon
+        lldWasm
+        lldYAML
     )
+  else()
+    target_link_libraries(ponyc PRIVATE
+        libponyc
+        libponyrt
+        blake2
+        lldDriver
+        lldELF
+        lldReaderWriter
+        lldCore
+        lldCommon
+        lldWasm
+        lldYAML
+    )
+  endif()
 
     llvm_config(ponyc all)
 
