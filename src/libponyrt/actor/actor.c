@@ -721,6 +721,10 @@ PONY_API void pony_sendv_single(pony_ctx_t* ctx, pony_actor_t* to,
 
 void ponyint_maybe_mute(pony_ctx_t* ctx, pony_actor_t* to)
 {
+#ifndef PONY_DISABLE_ACTOR_MUTE
+  (void)ctx;
+  (void)to;
+#else
   if(ctx->current != NULL)
   {
     // only mute a sender IF:
@@ -737,6 +741,7 @@ void ponyint_maybe_mute(pony_ctx_t* ctx, pony_actor_t* to)
       ponyint_sched_mute(ctx, ctx->current, to);
     }
   }
+#endif
 }
 
 PONY_API void pony_chain(pony_msg_t* prev, pony_msg_t* next)

@@ -124,6 +124,8 @@ define USE_CHECK
     PONY_USES += -DPONY_USE_MEMTRACK=true
   else ifeq ($1,memtrack_messages)
     PONY_USES += -DPONY_USE_MEMTRACK_MESSAGES=true
+  else ifeq ($1,disable_actor_mute)
+    PONY_USE += -DPONY_DISABLE_ACTOR_MUTE=true
   else
     $$(error ERROR: Unknown use option specified: $1)
   endif
